@@ -6,35 +6,25 @@ import statistics
 
 class Dataset:
     
-    def __init__(
-        self,
-        file_name='./data/survey_results_public.csv'
-    ):
+    def __init__(self, file_name='./data/survey_results_public.csv'):
         self.file_name = file_name
     
-    def load_data(
-        self,
-        is_indonesia=True
-    ):
+    def load_data(self, is_indonesia=True):
         df = pd.read_csv(self.file_name)
         if is_indonesia:
             return df[df['Country'] == 'Indonesia'].reset_index(drop=True)
         return df[df['Country'] != 'Indonesia'].reset_index(drop=True)
 
-    def gender_dataframe(self, df):
-        df = pd.DataFrame(df.groupby('Gender').size())
-        df.columns = ['count']
-        df['gender'] = df.index
+    def group_by(self, df, old_column, new_column):
+        df[old_column] = df[old_column].fillna('N/A')
+        df = df.groupby(old_column).size().to_frame()
+        df[new_column] = df.index
         df = df.reset_index(drop=True)
-        non_binary = pd.DataFrame([{
-            'count': df[(df['gender'] != 'Man') & (df['gender'] != 'Woman')]['count'].sum(),
-            'gender': 'Non-binary'
-        }])
-        df = pd.concat([df[(df['gender'] == 'Man') | (df['gender'] == 'Woman')], non_binary])
-        df = df.reset_index(drop=True)
-        df['pct'] = round(df['count'] / sum(df['count']), 4)
+        df.rename(columns={0: 'count'}, inplace=True)
+        df['count_percent'] = round(df['count'] / df['count'].sum(), 4)
 
         return df
+
 
     def age_first_code(self, df):
         df = df[~df['Age1stCode'].isin(['Older than 85', 'Younger than 5 years'])]
@@ -47,11 +37,7 @@ class Dataset:
 class Visualization(Dataset):
     XKCD = plt.xkcd()
     
-    def __init__(
-        self,
-        font_name='Comic Sans MS',
-        font_size=16,
-    ):
+    def __init__(self, font_name='Comic Sans MS', font_size=16):
         self.font = {
             'fontname': font_name,
             'size': font_size
@@ -62,12 +48,10 @@ class Visualization(Dataset):
             style='normal',
             size=font_size
         )
+    def caption(self, df, column):
+        return ' \n'.join([f'{df.index[x]}: {df[column][x]}' for x in range(len(df))])
         
-    def visualize_gender(
-        self,
-        gender_world,
-        gender_indonesia
-    ):
+    def bar_chart(self, df_world, df_indonesia, column, caption_x=0, caption_y=0):
         font = self.font
         legend_font = self.legend_font
         self.XKCD
@@ -75,28 +59,28 @@ class Visualization(Dataset):
         bar_width = 0.35
         opacity = 0.9
         ax.bar(
-            gender_world.index,
-            height='pct',
+            df_world.index,
+            height='count_percent',
             width=0.35,
-            data=gender_world,
+            data=df_world,
             alpha=opacity,
             color='black',
             label='World'
         )
         ax.bar(
-            gender_indonesia.index + bar_width,
-            height='pct',
+            df_indonesia.index + bar_width,
+            height='count_percent',
             width=0.35,
-            data=gender_indonesia,
+            data=df_indonesia,
             alpha=opacity,
             color='grey',
             label='Indonesia'
         )
-        plt.title('Stackoverflow Developer Survey 2020', **font)
-        plt.xticks(gender_world.index, **font)
+        plt.title(f'Stackoverflow Developer Survey 2020: {df_world.columns[1]}', **font)
+        plt.xticks(df_world.index, **font)
         plt.yticks(**font)
+        plt.text(caption_x, caption_y, self.caption(df_world, column))
         ax.legend(prop=legend_font)
-        ax.set_xticklabels(('Man', 'Woman', 'Non-binary'))
         vals = ax.get_yticks()
         ax.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
         ax.legend()
