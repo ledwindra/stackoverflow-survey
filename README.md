@@ -4,7 +4,7 @@ This is my attempt to gain insights from [Stackoverflow Developer Survey in 2020
 # Clone
 In any case you're interested to play around on your machine, just do the following inside the terminal:
 
-```
+```bash
 cd ~
 git clone https://github.com/ledwindra/stackoverflow-survey.git
 cd stackoverflow-survey
@@ -13,11 +13,11 @@ cd stackoverflow-survey
 # Virtual environment and install requirements
 You may need a virtual environment in case you don't want to mess up with the existing modules inside your machine because here we need external modules such as [`pandas`](https://github.com/pandas-dev/pandas), [`matplotlib`](https://github.com/matplotlib/matplotlib), and [`seaborn`](https://github.com/mwaskom/seaborn). Just do the following inside the terminal:
 
-```
-python3 -m venv .venv # .venv can be changed to whatever it is as you like
+```bash
+python -m venv .venv # .venv can be changed to whatever it is as you like
 source .venv/bin/activate
-pip3 install --upgrade pip
-pip3 install -r requirements.txt # you're all set
+pip install --upgrade pip
+pip install -r requirements.txt # you're all set
 ```
 
 Just type and press `deactivate` when you want to exit from the virtual environment. You can just install the requirements if you don't care with virtual environment at all :smile:
