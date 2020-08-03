@@ -25,7 +25,7 @@ Just type and press `deactivate` when you want to exit from the virtual environm
 # Let's get it on
 Now we're ready to explore the data. There are two main components here. First, it's the Python script that will be used in the notebook. It's located under `src/stackoverflow.py`. Its task is to manipulate the DataFrame and create visualization methods. The main purpose is to make the notebook looks cleaner. The notebook itself is located under `index.ipynb`.
 
-# Contribute or complaint
+# Contribute or complain
 You can contribute to the analysis by editing this repo inside your branch and making a pull request. Moreover, you can also file issues in case you have any questions or find bugs.
 
 # Enjoy
